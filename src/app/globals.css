@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-airbnb: -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+}
+
+body {
+  font-family: var(--font-airbnb);
+  color: #222222;
+  background-color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Airbnb brand button gradient */
+.airbnb-btn-gradient {
+  background: radial-gradient(circle at center, #FF385C 0%, #E00B41 50%, #D70466 100%);
+  background-size: 200% 200%;
+  transition: background-position 0.4s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.airbnb-btn-gradient:hover {
+  background-position: right center;
+  box-shadow: 0 4px 14px rgba(224, 11, 65, 0.35);
+}
+
+.airbnb-btn-gradient:active {
+  transform: scale(0.98);
+}
+
+/* Modal and focus outline styling */
+*:focus-visible {
+  outline: 2px solid #222222;
+  outline-offset: 2px;
+}
+
+/* Prevent body scrolling when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
