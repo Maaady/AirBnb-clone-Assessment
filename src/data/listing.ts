@@ -291,7 +291,7 @@ export const LISTING_DATA: ListingData = {
     },
     {
       id: 15,
-      url: "https://images.unsplash.com/photo-1507038772120-7fff76f79d74?auto=format&fit=crop&w=1200&q=80",
+      url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
       caption: "Sunset view from the infinity pool edge looking directly toward Point Dume.",
       category: "Exterior & Pool",
     },
