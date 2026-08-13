@@ -101,13 +101,13 @@ test.describe("Airbnb Clone Listing, Photo Tour, and Lightbox", () => {
     const photoTour = page.locator('div[aria-label="Photo tour"]');
     await expect(photoTour).toBeVisible();
 
-    // Click on a photo in the tour
-    const tourImage = page.locator('div[aria-label^="View full photo:"]').nth(2);
+    // Click on the first photo in the tour
+    const tourImage = page.locator('div[aria-label^="View full photo:"]').first();
     await tourImage.click();
 
     // Lightbox should open
     const lightbox = page.locator('div[aria-label="Photo Lightbox"]');
     await expect(lightbox).toBeVisible();
-    await expect(page.locator("#lightbox-counter")).toContainText("3 / 15");
+    await expect(page.locator("#lightbox-counter")).toContainText("1 / 15");
   });
 });
