@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Star, ChevronDown, Flag, Plus, Minus } from "lucide-react";
 import { ListingData } from "@/data/listing";
 
@@ -9,6 +9,56 @@ interface BookingCardProps {
   rating: number;
   reviewCount: number;
 }
+
+interface CounterRowProps {
+  label: string;
+  sublabel: string;
+  count: number;
+  min: number;
+  max: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
+}
+
+const GuestCounterRow: React.FC<CounterRowProps> = ({
+  label,
+  sublabel,
+  count,
+  min,
+  max,
+  onIncrement,
+  onDecrement,
+}) => (
+  <div className="flex items-center justify-between">
+    <div>
+      <div className="font-semibold text-sm text-airbnb-black">{label}</div>
+      <div className="text-xs text-airbnb-gray-400">{sublabel}</div>
+    </div>
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        aria-label={`Decrease ${label.toLowerCase()}`}
+        disabled={count <= min}
+        onClick={onDecrement}
+        className="w-8 h-8 rounded-full border border-airbnb-gray-300 flex items-center justify-center text-airbnb-gray-400 disabled:opacity-30 hover:border-airbnb-black transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-black"
+      >
+        <Minus className="w-3.5 h-3.5" />
+      </button>
+      <span className="text-sm font-semibold text-airbnb-black w-4 text-center">
+        {count}
+      </span>
+      <button
+        type="button"
+        aria-label={`Increase ${label.toLowerCase()}`}
+        disabled={count >= max}
+        onClick={onIncrement}
+        className="w-8 h-8 rounded-full border border-airbnb-gray-300 flex items-center justify-center text-airbnb-gray-600 disabled:opacity-30 hover:border-airbnb-black transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-black"
+      >
+        <Plus className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  </div>
+);
 
 export const BookingCard: React.FC<BookingCardProps> = ({
   pricing,
@@ -25,15 +75,14 @@ export const BookingCard: React.FC<BookingCardProps> = ({
 
   const guestPickerRef = useRef<HTMLDivElement>(null);
 
-  // Calculate nights
-  const calculateNights = () => {
+  // Memoize nights calculation
+  const nights = useMemo(() => {
     const start = new Date(checkInDate);
     const end = new Date(checkOutDate);
     const diff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
     return diff > 0 ? diff : pricing.minNights;
-  };
+  }, [checkInDate, checkOutDate, pricing.minNights]);
 
-  const nights = calculateNights();
   const baseTotal = pricing.nightlyRate * nights;
   const total = baseTotal + pricing.cleaningFee + pricing.serviceFee;
   const totalGuests = adults + childrenCount;
@@ -155,97 +204,38 @@ export const BookingCard: React.FC<BookingCardProps> = ({
               aria-label="Guest counts"
               className="absolute top-full left-0 right-0 mt-1 bg-white border border-airbnb-gray-200 rounded-2xl shadow-popup p-4 z-40 space-y-4 animate-in fade-in zoom-in-95 duration-150"
             >
-              {/* Adults */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-semibold text-sm text-airbnb-black">Adults</div>
-                  <div className="text-xs text-airbnb-gray-400">Age 13+</div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    aria-label="Decrease adults"
-                    disabled={adults <= 1}
-                    onClick={() => setAdults((a) => Math.max(1, a - 1))}
-                    className="w-8 h-8 rounded-full border border-airbnb-gray-300 flex items-center justify-center text-airbnb-gray-400 disabled:opacity-30 hover:border-airbnb-black transition-colors"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="text-sm font-semibold text-airbnb-black w-4 text-center">
-                    {adults}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label="Increase adults"
-                    disabled={totalGuests >= 8}
-                    onClick={() => setAdults((a) => a + 1)}
-                    className="w-8 h-8 rounded-full border border-airbnb-gray-300 flex items-center justify-center text-airbnb-gray-600 disabled:opacity-30 hover:border-airbnb-black transition-colors"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+              <GuestCounterRow
+                label="Adults"
+                sublabel="Age 13+"
+                count={adults}
+                min={1}
+                max={8 - childrenCount}
+                onIncrement={() => setAdults((a) => a + 1)}
+                onDecrement={() => setAdults((a) => Math.max(1, a - 1))}
+              />
+
+              <div className="border-t border-airbnb-gray-100 pt-3">
+                <GuestCounterRow
+                  label="Children"
+                  sublabel="Ages 2–12"
+                  count={childrenCount}
+                  min={0}
+                  max={8 - adults}
+                  onIncrement={() => setChildrenCount((c) => c + 1)}
+                  onDecrement={() => setChildrenCount((c) => Math.max(0, c - 1))}
+                />
               </div>
 
-              {/* Children */}
-              <div className="flex items-center justify-between border-t border-airbnb-gray-100 pt-3">
-                <div>
-                  <div className="font-semibold text-sm text-airbnb-black">Children</div>
-                  <div className="text-xs text-airbnb-gray-400">Ages 2–12</div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    aria-label="Decrease children"
-                    disabled={childrenCount <= 0}
-                    onClick={() => setChildrenCount((c) => Math.max(0, c - 1))}
-                    className="w-8 h-8 rounded-full border border-airbnb-gray-300 flex items-center justify-center text-airbnb-gray-400 disabled:opacity-30 hover:border-airbnb-black transition-colors"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="text-sm font-semibold text-airbnb-black w-4 text-center">
-                    {childrenCount}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label="Increase children"
-                    disabled={totalGuests >= 8}
-                    onClick={() => setChildrenCount((c) => c + 1)}
-                    className="w-8 h-8 rounded-full border border-airbnb-gray-300 flex items-center justify-center text-airbnb-gray-600 disabled:opacity-30 hover:border-airbnb-black transition-colors"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Infants */}
-              <div className="flex items-center justify-between border-t border-airbnb-gray-100 pt-3">
-                <div>
-                  <div className="font-semibold text-sm text-airbnb-black">Infants</div>
-                  <div className="text-xs text-airbnb-gray-400">Under 2</div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    aria-label="Decrease infants"
-                    disabled={infants <= 0}
-                    onClick={() => setInfants((i) => Math.max(0, i - 1))}
-                    className="w-8 h-8 rounded-full border border-airbnb-gray-300 flex items-center justify-center text-airbnb-gray-400 disabled:opacity-30 hover:border-airbnb-black transition-colors"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="text-sm font-semibold text-airbnb-black w-4 text-center">
-                    {infants}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label="Increase infants"
-                    disabled={infants >= 5}
-                    onClick={() => setInfants((i) => i + 1)}
-                    className="w-8 h-8 rounded-full border border-airbnb-gray-300 flex items-center justify-center text-airbnb-gray-600 disabled:opacity-30 hover:border-airbnb-black transition-colors"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+              <div className="border-t border-airbnb-gray-100 pt-3">
+                <GuestCounterRow
+                  label="Infants"
+                  sublabel="Under 2"
+                  count={infants}
+                  min={0}
+                  max={5}
+                  onIncrement={() => setInfants((i) => i + 1)}
+                  onDecrement={() => setInfants((i) => Math.max(0, i - 1))}
+                />
               </div>
 
               <div className="pt-2 text-right">

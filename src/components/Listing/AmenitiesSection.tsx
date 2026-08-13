@@ -17,10 +17,10 @@ import {
   ShieldAlert,
   BellRing,
   HeartPulse,
-  X,
   Refrigerator,
 } from "lucide-react";
 import { Amenity } from "@/data/listing";
+import { Modal } from "@/components/ui/Modal";
 
 interface AmenitiesSectionProps {
   amenities: Amenity[];
@@ -86,54 +86,29 @@ export const AmenitiesSection: React.FC<AmenitiesSectionProps> = ({ amenities })
       </div>
 
       {/* Full Amenities Modal */}
-      {isModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="amenities-modal-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 sm:p-6"
-        >
-          <div
-            className="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="p-6 border-b border-airbnb-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-3xl z-10">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                aria-label="Close amenities modal"
-                className="p-2 -ml-2 rounded-full hover:bg-airbnb-gray-50 text-airbnb-black transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <h2 id="amenities-modal-title" className="font-semibold text-lg text-airbnb-black">
-                What this place offers
-              </h2>
-              <div className="w-8" aria-hidden="true" />
-            </div>
-
-            {/* Modal Content with Categories */}
-            <div className="p-6 overflow-y-auto space-y-8 divide-y divide-airbnb-gray-100">
-              {Object.entries(categorized).map(([category, items], catIdx) => (
-                <div key={category} className={catIdx > 0 ? "pt-6" : ""}>
-                  <h3 className="font-semibold text-lg text-airbnb-black mb-4">{category}</h3>
-                  <div className="space-y-4">
-                    {items.map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-4 text-airbnb-black">
-                        <div className="text-airbnb-black">
-                          {amenityIconMap[item.iconName] || <Sparkles className="w-6 h-6 stroke-[1.5]" />}
-                        </div>
-                        <span className="text-base text-airbnb-black">{item.name}</span>
-                      </div>
-                    ))}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="What this place offers"
+      >
+        <div className="space-y-8 divide-y divide-airbnb-gray-100">
+          {Object.entries(categorized).map(([category, items], catIdx) => (
+            <div key={category} className={catIdx > 0 ? "pt-6" : ""}>
+              <h3 className="font-semibold text-lg text-airbnb-black mb-4">{category}</h3>
+              <div className="space-y-4">
+                {items.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-4 text-airbnb-black">
+                    <div className="text-airbnb-black">
+                      {amenityIconMap[item.iconName] || <Sparkles className="w-6 h-6 stroke-[1.5]" />}
+                    </div>
+                    <span className="text-base text-airbnb-black">{item.name}</span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
-      )}
+      </Modal>
     </section>
   );
 };

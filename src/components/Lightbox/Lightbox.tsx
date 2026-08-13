@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, X, Share, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Share, Heart, Check } from "lucide-react";
 import { Photo } from "@/data/listing";
+import { useShare } from "@/hooks/useShare";
 
 interface LightboxProps {
   isOpen: boolean;
@@ -22,6 +23,8 @@ export const Lightbox: React.FC<LightboxProps> = ({
   onNext,
   onPrev,
 }) => {
+  const [isSaved, setIsSaved] = useState(false);
+  const { showShareToast, handleShare } = useShare();
   const currentPhoto = photos[currentIndex] || photos[0];
   const total = photos.length;
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -33,7 +36,6 @@ export const Lightbox: React.FC<LightboxProps> = ({
     if (isOpen) {
       triggerElementRef.current = document.activeElement as HTMLElement;
       document.body.classList.add("modal-open");
-      // Focus close button
       setTimeout(() => {
         closeBtnRef.current?.focus();
       }, 50);
@@ -45,7 +47,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
     }
   }, [isOpen]);
 
-  // Keyboard navigation
+  // Keyboard navigation & focus trapping
   useEffect(() => {
     if (!isOpen) return;
 
@@ -60,7 +62,6 @@ export const Lightbox: React.FC<LightboxProps> = ({
         e.preventDefault();
         onPrev();
       } else if (e.key === "Tab") {
-        // Trap focus inside modal
         if (!dialogRef.current) return;
         const focusableElements = dialogRef.current.querySelectorAll(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -118,25 +119,34 @@ export const Lightbox: React.FC<LightboxProps> = ({
           {currentIndex + 1} / {total}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 relative">
           <button
             type="button"
             aria-label="Share this photo"
-            onClick={() => {
-              if (navigator.clipboard) {
-                navigator.clipboard.writeText(window.location.href);
-              }
-            }}
+            onClick={handleShare}
             className="p-2 rounded-full hover:bg-white/10 text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             <Share className="w-4 h-4" />
           </button>
+
+          {showShareToast && (
+            <div className="absolute right-12 top-2 bg-white text-airbnb-black text-xs px-3 py-1.5 rounded-md shadow-lg flex items-center gap-1.5 z-30 font-semibold">
+              <Check className="w-3.5 h-3.5 text-green-600" />
+              Link copied!
+            </div>
+          )}
+
           <button
             type="button"
             aria-label="Save this photo"
+            onClick={() => setIsSaved(!isSaved)}
             className="p-2 rounded-full hover:bg-white/10 text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
-            <Heart className="w-4 h-4" />
+            <Heart
+              className={`w-4 h-4 ${
+                isSaved ? "fill-airbnb-red text-airbnb-red" : "text-white"
+              }`}
+            />
           </button>
         </div>
       </div>

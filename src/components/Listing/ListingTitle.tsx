@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Star, Share, Heart, Check } from "lucide-react";
 import { ListingData } from "@/data/listing";
+import { useShare } from "@/hooks/useShare";
 
 interface ListingTitleProps {
   listing: ListingData;
@@ -10,15 +11,7 @@ interface ListingTitleProps {
 
 export const ListingTitle: React.FC<ListingTitleProps> = ({ listing }) => {
   const [isSaved, setIsSaved] = useState(false);
-  const [showShareToast, setShowShareToast] = useState(false);
-
-  const handleShare = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
-    }
-    setShowShareToast(true);
-    setTimeout(() => setShowShareToast(false), 2500);
-  };
+  const { showShareToast, handleShare } = useShare();
 
   return (
     <section className="pt-6 pb-4">

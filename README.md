@@ -101,12 +101,15 @@ airbnb-clone/
 │   │   │   ├── LocationSection.tsx
 │   │   │   ├── ReviewsSection.tsx
 │   │   │   └── SleepingArrangements.tsx
-│   │   └── PhotoTour/              # Fullscreen categorized photo tour
-│   │       └── PhotoTour.tsx
+│   │   ├── PhotoTour/              # Fullscreen categorized photo tour
+│   │   │   └── PhotoTour.tsx
+│   │   └── ui/                     # Reusable core UI components
+│   │       └── Modal.tsx           # Accessible reusable modal dialog
 │   ├── data/
 │   │   └── listing.ts              # Local static listing data model
 │   └── hooks/
-│       └── useLightbox.ts          # Lightbox state management hook
+│       ├── useLightbox.ts          # Lightbox state management hook
+│       └── useShare.ts             # Reusable clipboard share & toast hook
 ├── tests/
 │   └── listing.spec.ts             # Playwright test suite (10 test cases)
 ├── next.config.mjs
@@ -192,10 +195,11 @@ A conceptual production-scale architecture for a high-traffic vacation-rental ma
 
 ## Important Implementation Decisions
 
-1. **Local State vs. Global Stores**: Kept state localized using standard React hooks (`useLightbox`, component state) to eliminate unnecessary bundle bloat.
-2. **Zero External CSS Frameworks beyond Tailwind**: Pure Tailwind CSS utilities and custom tokens ensure maximum rendering performance and zero layout shift.
-3. **Focus Retention Pattern**: Lightbox captures the invoking element reference on open and cleanly restores focus on close, preventing screen reader disorientations.
-4. **Optimized Next.js Images**: Configured remote pattern domains with fill layouts and responsive sizing parameters.
+1. **Local State vs. Global Stores**: Kept state localized using standard React hooks (`useLightbox`, `useShare`, component state) to eliminate unnecessary bundle bloat.
+2. **Reusable Accessible Modal System**: Unified modal shell (`Modal.tsx`) across Description, Amenities, and Contact Host dialogs, guaranteeing consistent focus trapping, `Escape` key listeners, and body scroll lock.
+3. **Zero External CSS Frameworks beyond Tailwind**: Pure Tailwind CSS utilities and custom tokens ensure maximum rendering performance and zero layout shift.
+4. **Focus Retention Pattern**: Lightbox captures the invoking element reference on open and cleanly restores focus on close, preventing screen reader disorientations.
+5. **Optimized Next.js Images**: Configured remote pattern domains with fill layouts and responsive sizing parameters.
 
 ---
 

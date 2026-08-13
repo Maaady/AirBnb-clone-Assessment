@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { ArrowLeft, Share, Heart, Check } from "lucide-react";
 import { Photo } from "@/data/listing";
+import { useShare } from "@/hooks/useShare";
 
 interface PhotoTourProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ export const PhotoTour: React.FC<PhotoTourProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = React.useState<string>("All photos");
   const [isSaved, setIsSaved] = React.useState<boolean>(false);
-  const [showShareToast, setShowShareToast] = React.useState<boolean>(false);
+  const { showShareToast, handleShare } = useShare();
   const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   // Extract unique categories
@@ -40,11 +41,10 @@ export const PhotoTour: React.FC<PhotoTourProps> = ({
       items: photos.filter((p) => p.category === cat),
     }));
 
-  // Handle escape key and focus trap
+  // Handle escape key and focus
   useEffect(() => {
     if (!isOpen) return;
 
-    // Add modal-open class to body
     document.body.classList.add("modal-open");
     closeBtnRef.current?.focus();
 
@@ -62,14 +62,6 @@ export const PhotoTour: React.FC<PhotoTourProps> = ({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
-
-  const handleShare = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
-    }
-    setShowShareToast(true);
-    setTimeout(() => setShowShareToast(false), 2000);
-  };
 
   return (
     <div

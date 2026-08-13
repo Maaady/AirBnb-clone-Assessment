@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { ListingData } from "@/data/listing";
+import { Modal } from "@/components/ui/Modal";
 
 interface ListingDescriptionProps {
   description: ListingData["description"];
@@ -29,57 +30,32 @@ export const ListingDescription: React.FC<ListingDescriptionProps> = ({ descript
       </div>
 
       {/* Description Modal */}
-      {isModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="description-modal-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 sm:p-6"
-        >
-          <div
-            className="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="p-6 border-b border-airbnb-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-3xl">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                aria-label="Close modal"
-                className="p-2 -ml-2 rounded-full hover:bg-airbnb-gray-50 text-airbnb-black transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <h2 id="description-modal-title" className="font-semibold text-lg text-airbnb-black">
-                About this space
-              </h2>
-              <div className="w-8" aria-hidden="true" />
-            </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="About this space"
+      >
+        <div className="space-y-6 text-airbnb-gray-600 text-base leading-relaxed">
+          <div>
+            <p>{description.summary}</p>
+          </div>
 
-            {/* Modal Content */}
-            <div className="p-6 overflow-y-auto space-y-6 text-airbnb-gray-600 text-base leading-relaxed">
-              <div>
-                <p>{description.summary}</p>
-              </div>
+          <div>
+            <h3 className="font-semibold text-lg text-airbnb-black mb-2">The space</h3>
+            <p>{description.theSpace}</p>
+          </div>
 
-              <div>
-                <h3 className="font-semibold text-lg text-airbnb-black mb-2">The space</h3>
-                <p>{description.theSpace}</p>
-              </div>
+          <div>
+            <h3 className="font-semibold text-lg text-airbnb-black mb-2">Guest access</h3>
+            <p>{description.guestAccess}</p>
+          </div>
 
-              <div>
-                <h3 className="font-semibold text-lg text-airbnb-black mb-2">Guest access</h3>
-                <p>{description.guestAccess}</p>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-lg text-airbnb-black mb-2">Other things to note</h3>
-                <p>{description.otherThingsToNote}</p>
-              </div>
-            </div>
+          <div>
+            <h3 className="font-semibold text-lg text-airbnb-black mb-2">Other things to note</h3>
+            <p>{description.otherThingsToNote}</p>
           </div>
         </div>
-      )}
+      </Modal>
     </section>
   );
 };

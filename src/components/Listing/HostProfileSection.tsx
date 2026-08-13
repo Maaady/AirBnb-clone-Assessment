@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Award, Star, ShieldCheck, Briefcase, Globe, X } from "lucide-react";
+import { Award, Star, ShieldCheck, Briefcase, Globe } from "lucide-react";
 import { ListingData } from "@/data/listing";
+import { Modal } from "@/components/ui/Modal";
 
 interface HostProfileSectionProps {
   host: ListingData["host"];
@@ -112,62 +113,43 @@ export const HostProfileSection: React.FC<HostProfileSectionProps> = ({ host }) 
       </div>
 
       {/* Message Host Modal */}
-      {isContactModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="contact-modal-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-        >
-          <div
-            className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setIsContactModalOpen(false)}
-              aria-label="Close modal"
-              className="absolute top-5 right-5 p-2 rounded-full hover:bg-airbnb-gray-50 text-airbnb-black"
-            >
-              <X className="w-5 h-5" />
-            </button>
+      <Modal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        title={`Contact ${host.name}`}
+        maxWidth="max-w-lg"
+      >
+        <p className="text-sm text-airbnb-gray-400 mb-4">
+          Typically responds within an hour
+        </p>
 
-            <h3 id="contact-modal-title" className="text-xl font-bold text-airbnb-black mb-1">
-              Contact {host.name}
-            </h3>
-            <p className="text-sm text-airbnb-gray-400 mb-4">
-              Typically responds within an hour
-            </p>
-
-            {messageSent ? (
-              <div className="py-8 text-center text-green-600 font-semibold animate-in fade-in">
-                Message sent successfully!
-              </div>
-            ) : (
-              <form onSubmit={handleSendMessage} className="space-y-4">
-                <div>
-                  <label htmlFor="message-input" className="block text-xs font-semibold text-airbnb-black mb-1">
-                    Your message
-                  </label>
-                  <textarea
-                    id="message-input"
-                    rows={4}
-                    required
-                    placeholder={`Hi ${host.name}, I'm planning a trip to Malibu and have a quick question...`}
-                    className="w-full p-3 border border-airbnb-gray-200 rounded-xl text-sm focus:outline-none focus:border-airbnb-black"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-airbnb-black hover:bg-black text-white font-semibold py-3 rounded-xl transition-colors"
-                >
-                  Send message
-                </button>
-              </form>
-            )}
+        {messageSent ? (
+          <div className="py-8 text-center text-green-600 font-semibold animate-in fade-in">
+            Message sent successfully!
           </div>
-        </div>
-      )}
+        ) : (
+          <form onSubmit={handleSendMessage} className="space-y-4">
+            <div>
+              <label htmlFor="message-input" className="block text-xs font-semibold text-airbnb-black mb-1">
+                Your message
+              </label>
+              <textarea
+                id="message-input"
+                rows={4}
+                required
+                placeholder={`Hi ${host.name}, I'm planning a trip to Malibu and have a quick question...`}
+                className="w-full p-3 border border-airbnb-gray-200 rounded-xl text-sm focus:outline-none focus:border-airbnb-black"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-airbnb-black hover:bg-black text-white font-semibold py-3 rounded-xl transition-colors"
+            >
+              Send message
+            </button>
+          </form>
+        )}
+      </Modal>
     </section>
   );
 };
